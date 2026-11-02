@@ -1,0 +1,18 @@
+# Build outputs
+bin/
+obj/
+dist/
+release/
+share/
+release-win-x64*/
+*.pdb
+*.user
+*.suo
+.vs/
+
+# Design tooling
+.impeccable/
+
+# OS
+Thumbs.db
+.DS_Store

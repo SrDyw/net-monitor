@@ -1,0 +1,93 @@
+<UserControl x:Class="NetMonitor.Controls.WatermarkPlate"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:NetMonitor.Controls"
+             FontFamily="{StaticResource ChartFace}" FontSize="15"
+             UseLayoutRounding="True" SnapsToDevicePixels="True"
+             TextOptions.TextFormattingMode="Display"
+             Typography.NumeralAlignment="Tabular">
+    <!-- The overlay itself, shared by the watermark window and the settings preview.
+         DataContext: MonitorViewModel. Visibility of each part follows Prefs. -->
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <!-- Always deep water so it reads over any content, whatever the app theme. -->
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/Night.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <!-- Overlay ink, checked against the plate composited over both white and black windows. -->
+            <SolidColorBrush x:Key="PlateBrush" Color="#D90B1F33"/>
+            <SolidColorBrush x:Key="MutedBrush" Color="#C9DAE6"/>
+            <SolidColorBrush x:Key="AlertBrush" Color="#FF9CCF"/>
+            <BooleanToVisibilityConverter x:Key="Shown"/>
+            <Style x:Key="Readout" TargetType="FrameworkElement">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsOffline}" Value="True">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource PlateBrush}" Padding="12,8,12,8">
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Rectangle Style="{StaticResource Lamp}" Width="8" Height="8" Margin="0,0,10,0" VerticalAlignment="Center"/>
+
+                <!-- Readouts; the whole group gives way to the state word when the link is down. -->
+                <StackPanel Orientation="Horizontal" Style="{StaticResource Readout}">
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,18,0"
+                            Visibility="{Binding Prefs.ShowDown, Converter={StaticResource Shown}}">
+                    <Path Data="{StaticResource DownMark}" Stroke="{StaticResource Down3Brush}" StrokeThickness="1.5" Width="10" Height="11" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                    <TextBlock Foreground="{StaticResource InkBrush}"><Run Text="{Binding DownValue, Mode=OneWay}" FontWeight="Bold"/> <Run Text="{Binding DownUnit, Mode=OneWay}" FontSize="12" Foreground="{StaticResource MutedBrush}"/></TextBlock>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,18,0"
+                            Visibility="{Binding Prefs.ShowUp, Converter={StaticResource Shown}}">
+                    <Path Data="{StaticResource UpMark}" Stroke="{StaticResource Up3Brush}" StrokeThickness="1.5" Width="10" Height="11" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                    <TextBlock Foreground="{StaticResource InkBrush}"><Run Text="{Binding UpValue, Mode=OneWay}" FontWeight="Bold"/> <Run Text="{Binding UpUnit, Mode=OneWay}" FontSize="12" Foreground="{StaticResource MutedBrush}"/></TextBlock>
+                </StackPanel>
+
+                <TextBlock VerticalAlignment="Center"
+                           Visibility="{Binding Prefs.ShowLatency, Converter={StaticResource Shown}}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLatencyHigh}" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource AlertBrush}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                    <Run Text="{Binding LatencyValue, Mode=OneWay}" FontWeight="Bold"/> <Run Text="ms" FontSize="12"/>
+                </TextBlock>
+                </StackPanel>
+
+                <!-- Offline: the readout gives way to the state, in alert ink. -->
+                <TextBlock Text="{Binding StateTitle}" FontWeight="Bold" Foreground="{StaticResource AlertBrush}" VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsOffline}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StackPanel>
+
+            <!-- Network name, small, under the readout. -->
+            <TextBlock Text="{Binding NetworkLine}" FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="18,3,0,0"
+                       TextTrimming="CharacterEllipsis" MaxWidth="276"
+                       Visibility="{Binding Prefs.ShowNetwork, Converter={StaticResource Shown}}"/>
+
+            <c:TideChart Compact="True" Width="276" Height="28" Margin="0,6,0,0" HorizontalAlignment="Left" WindowSeconds="120"
+                         Samples="{Binding Samples}" Revision="{Binding Revision}"
+                         Visibility="{Binding Prefs.ShowChart, Converter={StaticResource Shown}}"/>
+        </StackPanel>
+    </Border>
+</UserControl>

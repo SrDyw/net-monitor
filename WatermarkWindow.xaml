@@ -1,0 +1,11 @@
+<Window x:Class="NetMonitor.WatermarkWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:NetMonitor.Controls"
+        Title="Net Monitor · marca de agua"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" SizeToContent="WidthAndHeight"
+        Topmost="True" ShowInTaskbar="False" ShowActivated="False" Focusable="False"
+        Opacity="{Binding Prefs.WatermarkOpacity}">
+    <c:WatermarkPlate/>
+</Window>

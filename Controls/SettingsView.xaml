@@ -1,0 +1,281 @@
+<UserControl x:Class="NetMonitor.Controls.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:NetMonitor.Controls">
+    <!-- DataContext: MonitorViewModel. Settings live on Prefs and apply as soon as they change. -->
+    <UserControl.Resources>
+        <c:EqualsConverter x:Key="Equals"/>
+
+        <Style x:Key="Section" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+        <Style x:Key="SectionRule" TargetType="Rectangle">
+            <Setter Property="Height" Value="1"/>
+            <Setter Property="Fill" Value="{DynamicResource RuleStrongBrush}"/>
+        </Style>
+        <!-- One setting: name and note on the left, its control on the right, a rule below. -->
+        <Style x:Key="Row" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="0,10,0,10"/>
+        </Style>
+        <Style x:Key="Name" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style x:Key="Note" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,2,0,0"/>
+        </Style>
+        <Style x:Key="Value" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Width" Value="52"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+
+    <DockPanel Margin="24,16,24,16">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,20">
+            <Button Style="{StaticResource RuleButton}" Command="{Binding ShowMonitorCommand}" ToolTip="Esc" Padding="10,6,12,6">
+                <StackPanel Orientation="Horizontal">
+                    <Path Data="{StaticResource BackMark}" Stroke="{DynamicResource InkBrush}" StrokeThickness="1.5" Width="7" Height="10" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Volver al monitor"/>
+                </StackPanel>
+            </Button>
+            <TextBlock Text="CONFIGURACIÓN" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" Margin="20,0,0,0"/>
+            <TextBlock Text="Los cambios se aplican y guardan al momento." FontSize="12" Foreground="{DynamicResource MutedBrush}"
+                       VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        </DockPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+            <Grid Margin="0,0,20,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="GENERAL" Style="{StaticResource Section}"/>
+                    <Rectangle Style="{StaticResource SectionRule}"/>
+
+                    <Border Style="{StaticResource Row}">
+                        <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding Prefs.StartWithWindows}">
+                            <StackPanel>
+                                <TextBlock Text="Iniciar con Windows" Style="{StaticResource Name}"/>
+                                <TextBlock Text="Abre Net Monitor al iniciar sesión. Cerrar la ventana la deja en la bandeja." Style="{StaticResource Note}"/>
+                            </StackPanel>
+                        </CheckBox>
+                    </Border>
+
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" KeyboardNavigation.TabNavigation="Once">
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Start" Content="Ventana"
+                                             IsChecked="{Binding Prefs.StartView, Converter={StaticResource Equals}, ConverterParameter=Window}"/>
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Start" Content="Bandeja"
+                                             IsChecked="{Binding Prefs.StartView, Converter={StaticResource Equals}, ConverterParameter=Tray}"/>
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Start" Content="Marca de agua"
+                                             IsChecked="{Binding Prefs.StartView, Converter={StaticResource Equals}, ConverterParameter=Watermark}"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,0,16,0">
+                                <TextBlock Text="Al iniciar" Style="{StaticResource Name}"/>
+                                <TextBlock Text="Qué se ve al arrancar." Style="{StaticResource Note}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <TextBlock Text="APARIENCIA" Style="{StaticResource Section}" Margin="0,28,0,10"/>
+                    <Rectangle Style="{StaticResource SectionRule}"/>
+
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" KeyboardNavigation.TabNavigation="Once">
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Theme" Content="Sistema"
+                                             IsChecked="{Binding Prefs.Theme, Converter={StaticResource Equals}, ConverterParameter=System}"/>
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Theme" Content="Claro"
+                                             IsChecked="{Binding Prefs.Theme, Converter={StaticResource Equals}, ConverterParameter=Light}"/>
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Theme" Content="Oscuro"
+                                             IsChecked="{Binding Prefs.Theme, Converter={StaticResource Equals}, ConverterParameter=Dark}"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,0,16,0">
+                                <TextBlock Text="Tema" Style="{StaticResource Name}"/>
+                                <TextBlock Text="Seguir el de Windows o fijar uno." Style="{StaticResource Note}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Row}">
+                        <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding Prefs.ShowNetworkDetails}">
+                            <StackPanel>
+                                <TextBlock Text="Mostrar detalles de la red" Style="{StaticResource Name}"/>
+                                <TextBlock Text="Nombre, tipo, IP local y puerta de enlace en la ventana." Style="{StaticResource Note}"/>
+                            </StackPanel>
+                        </CheckBox>
+                    </Border>
+
+                    <TextBlock Text="MEDICIÓN" Style="{StaticResource Section}" Margin="0,28,0,10"/>
+                    <Rectangle Style="{StaticResource SectionRule}"/>
+
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Width="180" VerticalAlignment="Center">
+                                <TextBox x:Name="PingHostBox" Style="{StaticResource RuleTextBox}"
+                                         Text="{Binding Prefs.PingHostDraft, UpdateSourceTrigger=PropertyChanged}"
+                                         KeyDown="OnPingHostKeyDown" LostKeyboardFocus="OnPingHostLostFocus"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,0,16,0">
+                                <TextBlock Text="Servidor de ping" Style="{StaticResource Name}"/>
+                                <!-- The hint, replaced by the problem while the draft is not a valid host. -->
+                                <TextBlock>
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource Note}">
+                                            <Setter Property="Text" Value="{Binding Prefs.PingHostError}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource AlertBrush}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Prefs.PingHostError}" Value="{x:Null}">
+                                                    <Setter Property="Text" Value="IP o nombre; si no responde se prueba 8.8.8.8. Enter para aplicar."/>
+                                                    <Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Slider Style="{StaticResource RuleSlider}" Width="128" Minimum="30" Maximum="400"
+                                        TickFrequency="10" IsSnapToTickEnabled="True" SmallChange="10" LargeChange="50"
+                                        Value="{Binding Prefs.HighLatencyMs}" AutomationProperties.Name="Latencia alta desde"/>
+                                <TextBlock Style="{StaticResource Value}" Text="{Binding Prefs.HighLatencyMs, StringFormat={}{0} ms}"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,0,16,0">
+                                <TextBlock Text="Latencia alta desde" Style="{StaticResource Name}"/>
+                                <TextBlock Text="Por encima, el estado pasa a LATENCIA ALTA." Style="{StaticResource Note}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" KeyboardNavigation.TabNavigation="Once">
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Units" Content="Bits · Mb/s"
+                                             IsChecked="{Binding Prefs.RatesInBytes, Converter={StaticResource Equals}, ConverterParameter=False}"/>
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Units" Content="Bytes · MB/s"
+                                             IsChecked="{Binding Prefs.RatesInBytes, Converter={StaticResource Equals}, ConverterParameter=True}"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,0,16,0">
+                                <TextBlock Text="Unidades" Style="{StaticResource Name}"/>
+                                <TextBlock Text="Cómo se expresa la velocidad." Style="{StaticResource Note}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <TextBlock Text="PROXY" Style="{StaticResource Section}" Margin="0,28,0,10"/>
+                    <Rectangle Style="{StaticResource SectionRule}"/>
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Style="{StaticResource RuleButton}" Content="Configurar…"
+                                    Click="OnProxyClick" VerticalAlignment="Center"/>
+                            <StackPanel Margin="0,0,16,0">
+                                <TextBlock Text="Proxy del sistema y variables" Style="{StaticResource Name}"/>
+                                <TextBlock Text="HTTP_PROXY, HTTPS_PROXY, servidor, excepciones y script PAC." Style="{StaticResource Note}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="MARCA DE AGUA" Style="{StaticResource Section}"/>
+                    <Rectangle Style="{StaticResource SectionRule}"/>
+
+                    <!-- Live preview: the real overlay with these settings, on a field of chart ground. -->
+                    <Border Background="{DynamicResource Ground2Brush}" Margin="0,12,0,4" Height="104">
+                        <c:WatermarkPlate HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          Opacity="{Binding Prefs.WatermarkOpacity}"/>
+                    </Border>
+                    <TextBlock Text="Vista previa en vivo. Ctrl+Alt+N alterna entre la ventana y la marca de agua; mantén Ctrl+Alt y arrástrala, o usa «Mover marca de agua» en la bandeja. La posición se guarda."
+                               Style="{StaticResource Note}" Margin="0,0,0,6"/>
+
+                    <Border Style="{StaticResource Row}">
+                        <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding Prefs.ShowDown}">
+                            <TextBlock Text="Mostrar bajada" Style="{StaticResource Name}"/>
+                        </CheckBox>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding Prefs.ShowUp}">
+                            <TextBlock Text="Mostrar subida" Style="{StaticResource Name}"/>
+                        </CheckBox>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding Prefs.ShowLatency}">
+                            <TextBlock Text="Mostrar latencia" Style="{StaticResource Name}"/>
+                        </CheckBox>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding Prefs.ShowChart}">
+                            <TextBlock Text="Mostrar gráfica de marea (2 min)" Style="{StaticResource Name}"/>
+                        </CheckBox>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding Prefs.ShowNetwork}">
+                            <TextBlock Text="Mostrar nombre de la red" Style="{StaticResource Name}"/>
+                        </CheckBox>
+                    </Border>
+
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Slider Style="{StaticResource RuleSlider}" Width="128" Minimum="0.4" Maximum="1"
+                                        TickFrequency="0.05" IsSnapToTickEnabled="True" SmallChange="0.05" LargeChange="0.1"
+                                        Value="{Binding Prefs.WatermarkOpacity}" AutomationProperties.Name="Opacidad"/>
+                                <TextBlock Style="{StaticResource Value}" Text="{Binding Prefs.WatermarkOpacity, StringFormat={}{0:P0}}"/>
+                            </StackPanel>
+                            <TextBlock Text="Opacidad" Style="{StaticResource Name}" VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Slider Style="{StaticResource RuleSlider}" Width="128" Minimum="0" Maximum="10"
+                                        TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="1"
+                                        Value="{Binding Prefs.WatermarkLogLines}" AutomationProperties.Name="Líneas de registro"/>
+                                <TextBlock Style="{StaticResource Value}" Text="{Binding Prefs.WatermarkLogLines}"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,0,16,0">
+                                <TextBlock Text="Líneas de registro de fijados" Style="{StaticResource Name}"/>
+                                <TextBlock Text="Filas de detalle apiladas junto a la marca de agua. 0 las oculta." Style="{StaticResource Note}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="Esquina" Style="{StaticResource Name}" Margin="0,0,0,8"/>
+                            <StackPanel Orientation="Horizontal" KeyboardNavigation.TabNavigation="Once">
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Corner" Content="Abajo derecha"
+                                             IsChecked="{Binding Prefs.WatermarkCorner, Converter={StaticResource Equals}, ConverterParameter=BottomRight}"/>
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Corner" Content="Abajo izquierda"
+                                             IsChecked="{Binding Prefs.WatermarkCorner, Converter={StaticResource Equals}, ConverterParameter=BottomLeft}"/>
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Corner" Content="Arriba derecha"
+                                             IsChecked="{Binding Prefs.WatermarkCorner, Converter={StaticResource Equals}, ConverterParameter=TopRight}"/>
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Corner" Content="Arriba izquierda"
+                                             IsChecked="{Binding Prefs.WatermarkCorner, Converter={StaticResource Equals}, ConverterParameter=TopLeft}"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

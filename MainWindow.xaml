@@ -1,0 +1,249 @@
+<Window x:Class="NetMonitor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:NetMonitor.Controls"
+        Title="Net Monitor" Icon="/Assets/NetMonitor.ico"
+        Width="1000" Height="680" MinWidth="760" MinHeight="520"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource GroundBrush}"
+        Foreground="{DynamicResource InkBrush}"
+        FontFamily="{StaticResource ChartFace}" FontSize="14"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        Typography.NumeralAlignment="Tabular">
+    <Window.Resources>
+        <c:EqualsConverter x:Key="Equals"/>
+        <BooleanToVisibilityConverter x:Key="Shown"/>
+        <Style x:Key="WatermarkLink" TargetType="Hyperlink">
+            <Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/>
+            <Setter Property="TextDecorations" Value="{x:Null}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource InkBrush}"/>
+                    <Setter Property="TextDecorations" Value="Underline"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="AlmanacRow" TargetType="Grid"><Setter Property="Margin" Value="0,8,0,0"/></Style>
+        <!-- Monitor and settings share the body; one shows at a time. -->
+        <Style x:Key="MonitorBody" TargetType="FrameworkElement">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Body}" Value="Monitor">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="SettingsBody" TargetType="FrameworkElement">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Body}" Value="Settings">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ProcessesBody" TargetType="FrameworkElement">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Body}" Value="Processes">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="D1" Command="{Binding SetRangeCommand}" CommandParameter="1"/>
+        <KeyBinding Modifiers="Ctrl" Key="D2" Command="{Binding SetRangeCommand}" CommandParameter="5"/>
+        <KeyBinding Modifiers="Ctrl" Key="D3" Command="{Binding SetRangeCommand}" CommandParameter="15"/>
+        <KeyBinding Key="Escape" Command="{Binding ShowMonitorCommand}"/>
+        <KeyBinding Modifiers="Ctrl" Key="P" Command="{Binding OpenProcessesCommand}"/>
+        <KeyBinding Modifiers="Ctrl" Key="OemComma" Command="{Binding OpenSettingsCommand}"/>
+    </Window.InputBindings>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="52"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- State strip -->
+        <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="24,0">
+            <DockPanel VerticalAlignment="Center" LastChildFill="False">
+                <Rectangle DockPanel.Dock="Left" Style="{StaticResource Lamp}" Margin="0,0,12,0"/>
+                <TextBlock DockPanel.Dock="Left" Text="{Binding StateTitle}" FontSize="15" FontWeight="Bold" Margin="0,0,24,0"/>
+                <TextBlock DockPanel.Dock="Left" Text="{Binding StateDetail}" Foreground="{DynamicResource MutedBrush}" FontSize="13" Margin="0,0,24,0"/>
+                <TextBlock DockPanel.Dock="Left" Text="{Binding StateNote}" Foreground="{DynamicResource MutedBrush}" FontSize="13"/>
+                <Button DockPanel.Dock="Right" Style="{StaticResource RuleButton}" Command="{Binding ToggleModeCommand}"
+                        ToolTip="Superposición transparente que el ratón atraviesa. Mantén Ctrl+Alt y arrástrala para moverla.">
+                    <TextBlock>
+                        <Run Text="Modo marca de agua"/>
+                        <Run Text="  Ctrl+Alt+N" Foreground="{DynamicResource MutedBrush}"/>
+                    </TextBlock>
+                </Button>
+                <Button DockPanel.Dock="Right" Style="{StaticResource RuleButton}" Command="{Binding OpenSettingsCommand}"
+                        Content="Configuración" ToolTip="Ctrl+," Margin="0,0,8,0"/>
+                <Button DockPanel.Dock="Right" Style="{StaticResource RuleButton}" Command="{Binding OpenProcessesCommand}"
+                        Content="Procesos" ToolTip="Tráfico por proceso (Ctrl+P)" Margin="0,0,8,0"/>
+            </DockPanel>
+        </Border>
+
+        <c:SettingsView Grid.Row="1" Style="{StaticResource SettingsBody}"/>
+        <!-- The trigger reads Body from the window's view model, so the inspector gets its own DataContext one level down. -->
+        <Border Grid.Row="1" Style="{StaticResource ProcessesBody}">
+            <c:ProcessesView DataContext="{Binding Processes}"/>
+        </Border>
+
+        <Grid Grid.Row="1" Style="{StaticResource MonitorBody}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Tide chart -->
+            <Grid Margin="24,20,24,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <DockPanel>
+                    <TextBlock Text="MAREA DE TRÁFICO" FontSize="15" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" KeyboardNavigation.TabNavigation="Once">
+                        <RadioButton Style="{StaticResource Segment}" GroupName="Range" Content="1 min" ToolTip="Ctrl+1"
+                                     IsChecked="{Binding RangeMinutes, Converter={StaticResource Equals}, ConverterParameter=1}"/>
+                        <RadioButton Style="{StaticResource Segment}" GroupName="Range" Content="5 min" ToolTip="Ctrl+2"
+                                     IsChecked="{Binding RangeMinutes, Converter={StaticResource Equals}, ConverterParameter=5}"/>
+                        <RadioButton Style="{StaticResource Segment}" GroupName="Range" Content="15 min" ToolTip="Ctrl+3"
+                                     IsChecked="{Binding RangeMinutes, Converter={StaticResource Equals}, ConverterParameter=15}"/>
+                    </StackPanel>
+                </DockPanel>
+                <c:TideChart Grid.Row="1" Margin="0,14,0,0"
+                             Samples="{Binding Samples}" Revision="{Binding Revision}" WindowSeconds="{Binding WindowSeconds}"/>
+            </Grid>
+
+            <!-- Almanac: one type size; rank by weight, case and rule. -->
+            <Border Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1,0,0,0" Padding="20,20,20,16">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="AHORA" FontSize="15" FontWeight="Bold" Margin="0,0,0,10"/>
+                    <Rectangle DockPanel.Dock="Top" Height="1" Fill="{DynamicResource RuleStrongBrush}"/>
+
+                    <StackPanel DockPanel.Dock="Top">
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <TextBlock Text="BAJADA" Foreground="{DynamicResource MutedBrush}"/>
+                            <TextBlock Grid.Column="1"><Run Text="{Binding DownValue, Mode=OneWay}" FontWeight="Bold"/> <Run Text="{Binding DownUnit, Mode=OneWay}" Foreground="{DynamicResource MutedBrush}"/></TextBlock>
+                        </Grid>
+                        <c:Trace Kind="Down" Height="20" Margin="0,6,0,0" Samples="{Binding Samples}" Revision="{Binding Revision}"/>
+
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <TextBlock Text="SUBIDA" Foreground="{DynamicResource MutedBrush}"/>
+                            <TextBlock Grid.Column="1"><Run Text="{Binding UpValue, Mode=OneWay}" FontWeight="Bold"/> <Run Text="{Binding UpUnit, Mode=OneWay}" Foreground="{DynamicResource MutedBrush}"/></TextBlock>
+                        </Grid>
+                        <c:Trace Kind="Up" Height="20" Margin="0,6,0,0" Samples="{Binding Samples}" Revision="{Binding Revision}"/>
+
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <TextBlock Text="LATENCIA" Foreground="{DynamicResource MutedBrush}"/>
+                            <TextBlock Grid.Column="1">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsLatencyHigh}" Value="True">
+                                                <Setter Property="Foreground" Value="{DynamicResource AlertBrush}"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsOffline}" Value="True">
+                                                <Setter Property="Foreground" Value="{DynamicResource AlertBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                                <Run Text="{Binding LatencyValue, Mode=OneWay}" FontWeight="Bold"/> <Run Text="{Binding LatencyUnit, Mode=OneWay}"/>
+                            </TextBlock>
+                        </Grid>
+                        <c:Trace Kind="Latency" Height="20" Margin="0,6,0,0" Samples="{Binding Samples}" Revision="{Binding Revision}"/>
+
+                        <TextBlock Text="SESIÓN" FontSize="15" FontWeight="Bold" Margin="0,24,0,10"/>
+                        <Rectangle Height="1" Fill="{DynamicResource RuleStrongBrush}"/>
+                        <ItemsControl Focusable="False">
+                            <ItemsControl.Resources>
+                                <Style TargetType="Grid"><Setter Property="Margin" Value="0,8,0,0"/></Style>
+                            </ItemsControl.Resources>
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="TOTAL BAJADO" Foreground="{DynamicResource MutedBrush}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding TotalDownText}" FontWeight="Bold"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="TOTAL SUBIDO" Foreground="{DynamicResource MutedBrush}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding TotalUpText}" FontWeight="Bold"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="TIEMPO" Foreground="{DynamicResource MutedBrush}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SessionText}" FontWeight="Bold"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="CORTES" Foreground="{DynamicResource MutedBrush}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding OutagesText}" FontWeight="Bold"/>
+                            </Grid>
+                        </ItemsControl>
+
+                        <StackPanel Visibility="{Binding Prefs.ShowNetworkDetails, Converter={StaticResource Shown}}">
+                            <TextBlock Text="RED" FontSize="15" FontWeight="Bold" Margin="0,24,0,10"/>
+                            <Rectangle Height="1" Fill="{DynamicResource RuleStrongBrush}"/>
+                            <Grid Style="{StaticResource AlmanacRow}">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                                <TextBlock Text="NOMBRE" Foreground="{DynamicResource MutedBrush}" Margin="0,0,16,0"/>
+                                <TextBlock Grid.Column="1" Text="{Binding NetworkName}" FontWeight="Bold" TextAlignment="Right"
+                                           TextTrimming="CharacterEllipsis" ToolTip="{Binding NetworkName}"/>
+                            </Grid>
+                            <Grid Style="{StaticResource AlmanacRow}">
+                                <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="TIPO" Foreground="{DynamicResource MutedBrush}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding NetworkKind}" FontWeight="Bold"/>
+                            </Grid>
+                            <Grid Style="{StaticResource AlmanacRow}">
+                                <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="IP LOCAL" Foreground="{DynamicResource MutedBrush}"/>
+                                <TextBox Grid.Column="1" Text="{Binding LocalAddress, Mode=OneWay}" FontWeight="Bold" IsReadOnly="True"
+                                         Background="Transparent" BorderThickness="0" Padding="0" Foreground="{DynamicResource InkBrush}"
+                                         SelectionBrush="{DynamicResource Down2Brush}" CaretBrush="{DynamicResource InkBrush}"/>
+                            </Grid>
+                            <Grid Style="{StaticResource AlmanacRow}">
+                                <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="PUERTA DE ENLACE" Foreground="{DynamicResource MutedBrush}"/>
+                                <TextBox Grid.Column="1" Text="{Binding Gateway, Mode=OneWay}" FontWeight="Bold" IsReadOnly="True"
+                                         Background="Transparent" BorderThickness="0" Padding="0" Foreground="{DynamicResource InkBrush}"
+                                         SelectionBrush="{DynamicResource Down2Brush}" CaretBrush="{DynamicResource InkBrush}"/>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0" Padding="24,4,24,6">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Net Monitor" FontSize="11" Foreground="{DynamicResource MutedBrush}"/>
+                    <TextBlock Text="{Binding AppVersion, RelativeSource={RelativeSource AncestorType=Window}}"
+                               FontSize="11" Foreground="{DynamicResource MutedBrush}" Margin="6,0,0,0"/>
+                </StackPanel>
+                <TextBlock HorizontalAlignment="Right" FontSize="11" VerticalAlignment="Center">
+                    <Hyperlink Style="{StaticResource WatermarkLink}" NavigateUri="https://github.com/SrDyw"
+                               RequestNavigate="OnGitHub" ToolTip="Abrir el perfil de GitHub">
+                        <Run Text="github.com/SrDyw"/>
+                    </Hyperlink>
+                    <Run Text="  ·  " Foreground="{DynamicResource MutedBrush}"/>
+                    <Hyperlink Style="{StaticResource WatermarkLink}" NavigateUri="https://github.com/SrDyw/net-monitor"
+                               RequestNavigate="OnGitHub" ToolTip="Abrir el repositorio del proyecto">
+                        <Run Text="github.com/SrDyw/net-monitor"/>
+                    </Hyperlink>
+                </TextBlock>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
