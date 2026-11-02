@@ -223,7 +223,7 @@
                     </Border>
                     <Border Style="{StaticResource Row}">
                         <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding Prefs.ShowTotal}">
-                            <TextBlock Text="Mostrar total (bajada + subida)" Style="{StaticResource Name}"/>
+                            <TextBlock Text="Mostrar velocidad (bajada + subida)" Style="{StaticResource Name}"/>
                         </CheckBox>
                     </Border>
                     <Border Style="{StaticResource Row}">

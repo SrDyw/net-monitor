@@ -9,7 +9,7 @@ Monitor de red para Windows: caudal de subida y bajada, latencia, estado del enl
 ## Características
 
 - **Caudal en vivo** sumando los adaptadores que llevan la ruta por defecto, con respaldo para túneles VPN.
-- **Velocidad total** (bajada + subida) en el panel AHORA y en la marca de agua.
+- **Velocidad (bajada + subida)** en el panel AHORA y en la marca de agua.
 - **Latencia** por ICMP, con respaldo TCP y HTTP para redes donde el ping está bloqueado (VPN, proxy, cortafuegos).
 - **Estado del enlace**: conectado, latencia alta, sin internet o sin red, con adaptador, IP local y puerta de enlace.
 - **Gráfico de marea** de 1, 5 o 15 minutos; los cortes quedan marcados como tierra.

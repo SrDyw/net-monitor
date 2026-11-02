@@ -100,7 +100,7 @@
                             </Style.Triggers>
                         </Style>
                     </TextBlock.Style>
-                    <Run Text="TOTAL " FontSize="11" Foreground="{StaticResource MutedBrush}"/>
+                    <Run Text="VELOCIDAD " FontSize="11" Foreground="{StaticResource MutedBrush}"/>
                     <Run Text="{Binding TotalValue, Mode=OneWay}" FontWeight="Bold" Foreground="{StaticResource InkBrush}"/>
                     <Run Text="{Binding TotalUnit, Mode=OneWay}" FontSize="11" Foreground="{StaticResource MutedBrush}"/>
                 </TextBlock>

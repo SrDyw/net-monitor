@@ -145,7 +145,7 @@
 
                         <Grid Margin="0,12,0,0" ToolTip="Bajada + subida en este instante.">
                             <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                            <TextBlock Text="TOTAL" Foreground="{DynamicResource MutedBrush}"/>
+                            <TextBlock Text="VELOCIDAD" Foreground="{DynamicResource MutedBrush}"/>
                             <TextBlock Grid.Column="1"><Run Text="{Binding TotalValue, Mode=OneWay}" FontWeight="Bold"/> <Run Text="{Binding TotalUnit, Mode=OneWay}" Foreground="{DynamicResource MutedBrush}"/></TextBlock>
                         </Grid>
                         <c:Trace Kind="Total" Height="20" Margin="0,6,0,0" Samples="{Binding Samples}" Revision="{Binding Revision}"/>
