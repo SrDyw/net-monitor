@@ -26,6 +26,7 @@ public partial class PreferencesViewModel : ObservableObject
         _showDown = settings.WatermarkShowDown;
         _showUp = settings.WatermarkShowUp;
         _showLatency = settings.WatermarkShowLatency;
+        _showTotal = settings.WatermarkShowTotal;
         _showChart = settings.WatermarkShowChart;
         _showNetwork = settings.WatermarkShowNetwork;
         _showNetworkDetails = settings.ShowNetworkDetails;
@@ -49,6 +50,7 @@ public partial class PreferencesViewModel : ObservableObject
     [ObservableProperty] private bool _showDown;
     [ObservableProperty] private bool _showUp;
     [ObservableProperty] private bool _showLatency;
+    [ObservableProperty] private bool _showTotal;
     [ObservableProperty] private bool _showChart;
     [ObservableProperty] private bool _showNetwork;
     [ObservableProperty] private bool _showNetworkDetails;
@@ -154,6 +156,7 @@ public partial class PreferencesViewModel : ObservableObject
             case nameof(ShowDown): _settings.WatermarkShowDown = ShowDown; break;
             case nameof(ShowUp): _settings.WatermarkShowUp = ShowUp; break;
             case nameof(ShowLatency): _settings.WatermarkShowLatency = ShowLatency; break;
+            case nameof(ShowTotal): _settings.WatermarkShowTotal = ShowTotal; break;
             case nameof(ShowChart): _settings.WatermarkShowChart = ShowChart; break;
             case nameof(ShowNetwork): _settings.WatermarkShowNetwork = ShowNetwork; break;
             case nameof(ShowNetworkDetails): _settings.ShowNetworkDetails = ShowNetworkDetails; break;

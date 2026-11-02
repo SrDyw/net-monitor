@@ -46,6 +46,7 @@ public sealed class Settings
     public bool WatermarkShowDown { get; set; } = true;
     public bool WatermarkShowUp { get; set; } = true;
     public bool WatermarkShowLatency { get; set; } = true;
+    public bool WatermarkShowTotal { get; set; } = true;
     public bool WatermarkShowChart { get; set; } = true;
     public bool WatermarkShowNetwork { get; set; } = true;
 

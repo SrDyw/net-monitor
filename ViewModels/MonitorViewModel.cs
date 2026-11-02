@@ -59,6 +59,8 @@ public partial class MonitorViewModel : ObservableObject
     [ObservableProperty] private string _downUnit = "Mb/s";
     [ObservableProperty] private string _upValue = "—";
     [ObservableProperty] private string _upUnit = "Mb/s";
+    [ObservableProperty] private string _totalValue = "—";
+    [ObservableProperty] private string _totalUnit = "Mb/s";
     [ObservableProperty] private string _latencyValue = "—";
     [ObservableProperty] private string _latencyUnit = "ms";
     [ObservableProperty] private bool _isLatencyHigh;
@@ -215,6 +217,7 @@ public partial class MonitorViewModel : ObservableObject
 
         (DownValue, DownUnit) = Format.Rate(down);
         (UpValue, UpUnit) = Format.Rate(up);
+        (TotalValue, TotalUnit) = Format.Rate(down + up);
 
         if (state == LinkState.NoInternet)
         {

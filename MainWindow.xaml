@@ -24,7 +24,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        <Style x:Key="AlmanacRow" TargetType="Grid"><Setter Property="Margin" Value="0,8,0,0"/></Style>
+        <Style x:Key="AlmanacRow" TargetType="Grid"><Setter Property="Margin" Value="0,6,0,0"/></Style>
         <!-- Monitor and settings share the body; one shows at a time. -->
         <Style x:Key="MonitorBody" TargetType="FrameworkElement">
             <Setter Property="Visibility" Value="Collapsed"/>
@@ -127,7 +127,8 @@
                     <TextBlock DockPanel.Dock="Top" Text="AHORA" FontSize="15" FontWeight="Bold" Margin="0,0,0,10"/>
                     <Rectangle DockPanel.Dock="Top" Height="1" Fill="{DynamicResource RuleStrongBrush}"/>
 
-                    <StackPanel DockPanel.Dock="Top">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+                    <StackPanel Margin="0,0,4,0">
                         <Grid Margin="0,12,0,0">
                             <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                             <TextBlock Text="BAJADA" Foreground="{DynamicResource MutedBrush}"/>
@@ -141,6 +142,13 @@
                             <TextBlock Grid.Column="1"><Run Text="{Binding UpValue, Mode=OneWay}" FontWeight="Bold"/> <Run Text="{Binding UpUnit, Mode=OneWay}" Foreground="{DynamicResource MutedBrush}"/></TextBlock>
                         </Grid>
                         <c:Trace Kind="Up" Height="20" Margin="0,6,0,0" Samples="{Binding Samples}" Revision="{Binding Revision}"/>
+
+                        <Grid Margin="0,12,0,0" ToolTip="Bajada + subida en este instante.">
+                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <TextBlock Text="TOTAL" Foreground="{DynamicResource MutedBrush}"/>
+                            <TextBlock Grid.Column="1"><Run Text="{Binding TotalValue, Mode=OneWay}" FontWeight="Bold"/> <Run Text="{Binding TotalUnit, Mode=OneWay}" Foreground="{DynamicResource MutedBrush}"/></TextBlock>
+                        </Grid>
+                        <c:Trace Kind="Total" Height="20" Margin="0,6,0,0" Samples="{Binding Samples}" Revision="{Binding Revision}"/>
 
                         <Grid Margin="0,12,0,0">
                             <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
@@ -163,11 +171,11 @@
                         </Grid>
                         <c:Trace Kind="Latency" Height="20" Margin="0,6,0,0" Samples="{Binding Samples}" Revision="{Binding Revision}"/>
 
-                        <TextBlock Text="SESIÓN" FontSize="15" FontWeight="Bold" Margin="0,24,0,10"/>
+                        <TextBlock Text="SESIÓN" FontSize="15" FontWeight="Bold" Margin="0,18,0,8"/>
                         <Rectangle Height="1" Fill="{DynamicResource RuleStrongBrush}"/>
                         <ItemsControl Focusable="False">
                             <ItemsControl.Resources>
-                                <Style TargetType="Grid"><Setter Property="Margin" Value="0,8,0,0"/></Style>
+                                <Style TargetType="Grid"><Setter Property="Margin" Value="0,6,0,0"/></Style>
                             </ItemsControl.Resources>
                             <Grid>
                                 <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
@@ -192,7 +200,7 @@
                         </ItemsControl>
 
                         <StackPanel Visibility="{Binding Prefs.ShowNetworkDetails, Converter={StaticResource Shown}}">
-                            <TextBlock Text="RED" FontSize="15" FontWeight="Bold" Margin="0,24,0,10"/>
+                            <TextBlock Text="RED" FontSize="15" FontWeight="Bold" Margin="0,18,0,8"/>
                             <Rectangle Height="1" Fill="{DynamicResource RuleStrongBrush}"/>
                             <Grid Style="{StaticResource AlmanacRow}">
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/></Grid.ColumnDefinitions>
@@ -221,6 +229,7 @@
                             </Grid>
                         </StackPanel>
                     </StackPanel>
+                    </ScrollViewer>
                 </DockPanel>
             </Border>
         </Grid>

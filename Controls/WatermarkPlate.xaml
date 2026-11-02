@@ -80,10 +80,31 @@
                 </TextBlock>
             </StackPanel>
 
-            <!-- Network name, small, under the readout. -->
-            <TextBlock Text="{Binding NetworkLine}" FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="18,3,0,0"
-                       TextTrimming="CharacterEllipsis" MaxWidth="276"
-                       Visibility="{Binding Prefs.ShowNetwork, Converter={StaticResource Shown}}"/>
+            <!-- Network name and total rate, small, under the readout. -->
+            <DockPanel Margin="18,3,0,0">
+                <TextBlock Text="{Binding NetworkLine}" FontSize="12" Foreground="{StaticResource MutedBrush}"
+                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                           Visibility="{Binding Prefs.ShowNetwork, Converter={StaticResource Shown}}"/>
+                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding Prefs.ShowTotal}" Value="True"/>
+                                        <Condition Binding="{Binding IsOffline}" Value="False"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                    <Run Text="TOTAL " FontSize="11" Foreground="{StaticResource MutedBrush}"/>
+                    <Run Text="{Binding TotalValue, Mode=OneWay}" FontWeight="Bold" Foreground="{StaticResource InkBrush}"/>
+                    <Run Text="{Binding TotalUnit, Mode=OneWay}" FontSize="11" Foreground="{StaticResource MutedBrush}"/>
+                </TextBlock>
+            </DockPanel>
 
             <c:TideChart Compact="True" Width="276" Height="28" Margin="0,6,0,0" HorizontalAlignment="Left" WindowSeconds="120"
                          Samples="{Binding Samples}" Revision="{Binding Revision}"

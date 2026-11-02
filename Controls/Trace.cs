@@ -10,6 +10,7 @@ public enum TraceKind
 {
     Down,
     Up,
+    Total,
     Latency,
 }
 
@@ -78,6 +79,7 @@ public sealed class Trace : FrameworkElement
         {
             TraceKind.Down => "Down3Brush",
             TraceKind.Up => "Up3Brush",
+            TraceKind.Total => "InkBrush",
             _ => "MutedBrush",
         };
         var pen = new Pen(ink.Brush(key), ink.Hairline * 1.5);
@@ -111,6 +113,7 @@ public sealed class Trace : FrameworkElement
     {
         TraceKind.Down => s.Outage ? null : s.DownBps,
         TraceKind.Up => s.Outage ? null : s.UpBps,
+        TraceKind.Total => s.Outage ? null : s.DownBps + s.UpBps,
         _ => s.LatencyMs,
     };
 }

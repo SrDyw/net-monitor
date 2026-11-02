@@ -222,6 +222,11 @@
                         </CheckBox>
                     </Border>
                     <Border Style="{StaticResource Row}">
+                        <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding Prefs.ShowTotal}">
+                            <TextBlock Text="Mostrar total (bajada + subida)" Style="{StaticResource Name}"/>
+                        </CheckBox>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
                         <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding Prefs.ShowChart}">
                             <TextBlock Text="Mostrar gráfica de marea (2 min)" Style="{StaticResource Name}"/>
                         </CheckBox>
